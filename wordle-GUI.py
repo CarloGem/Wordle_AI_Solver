@@ -141,29 +141,28 @@ def letter_frequency_total(possible_solutions):
         
     return letter_dictionary
     
-#get the value of all possible guesses (the lower the better)
+#get the entropy value of all possible guesses (the lower the better)
 def get_entropy(possible_solutions, allowed_words):
-
     word_dictionary = {}
-    i=0
-    
+    i=0  
     for word in allowed_words:
         word_dictionary.update({word:0})
     for word in allowed_words:
         i+=1
         temp_solutions_len_array = np.array([])
         for solution in possible_solutions:
-            temp_solutions_len_array = np.append(temp_solutions_len_array, len(return_possible_solutions_AI(word, solution, possible_solutions)))
+            temp_solutions_len_array = np.append(temp_solutions_len_array, 
+                len(return_possible_solutions_AI(word, solution, possible_solutions)))
             
         word_dictionary.update({word:np.mean(temp_solutions_len_array, dtype=np.float64)})
-        print("entropy done for: ",word, "at position: ",i, " / ",len(allowed_words)," [ ",len(possible_solutions)," ]")
+        #print("entropy done for: ",word, "at position: ",i, " / ",len(allowed_words)," [ ",len(possible_solutions)," ]")
        
     return word_dictionary
 
 
 # trying to determine the best guess using a entropy-based system for every word
-# entropy = the average remaining solutions if we use a specific guess (lesser remaining solutions = best guess)
-# efficient but extremely time-consuming heuristic (8 minutes per game)
+# entropy = the average remaining solutions if we use a specific guess (lesser remaining solutions = better guess)
+# efficient but extremely time-consuming heuristic (more than 10 minutes per game)
 def best_guess_entropy(n, previous_guesses, possible_solutions, allowed_words):
     print("Trying to get the best guess for attempt n.", n)
     if n == 1:
@@ -183,7 +182,7 @@ def best_guess(n, previous_guesses, possible_solutions, allowed_words):
     print("Trying to get the best guess for attempt n.", n)
     if n == 1:
         return "slane" #best first word guess overall
-    elif len(possible_solutions) < 5 or n == 6:
+    elif len(possible_solutions) < 8 or n > 4:
         letter_dictionary = letter_frequency_total(possible_solutions)
         #print(letter_dictionary)
         past_letters = []
@@ -202,7 +201,7 @@ def best_guess(n, previous_guesses, possible_solutions, allowed_words):
     else:
         letter_dictionary = letter_frequency_total(possible_solutions)
         #print(letter_dictionary)
-        
+
         maxvalue = 0
         for word in allowed_words:
             past_letters = []
